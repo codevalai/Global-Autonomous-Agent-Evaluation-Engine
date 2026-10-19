@@ -2,5 +2,7 @@
   "name": "GAEE — Global Autonomous Agent Evaluation Engine",
   "description": "Real-time global autonomous agent directory, 5-second discovery crawler, sandboxed capability & financial ($ Evaluation) kernel, cryptographic DID verifier, and Top 1 Million Leaderboard.",
   "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

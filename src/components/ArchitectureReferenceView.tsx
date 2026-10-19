@@ -27,6 +27,7 @@ import {
   computeHmacSha256,
   verifyMerkleInclusionProof,
 } from '../utils/cryptoAndEval';
+import { ApexFourPillarsPanel } from './ApexFourPillarsPanel';
 
 interface ArchitectureReferenceViewProps {
   agents: GlobalAgentEntry[];
@@ -287,10 +288,14 @@ echo "GAEE Production Backend & Deployment files successfully generated."
 ├── backend_engine/
 │   ├── requirements.txt                   # Kafka, Redis, Qdrant, AsyncPG, Celery
 │   ├── crawler_worker.py                  # 5s ARD Scraper + Redis 4s NX Lock
+│   ├── p2p_gossip_mesh.py                 # Libp2p Kademlia DHT GossipSub Mesh
 │   ├── orchestrator.py                    # Distributed Celery Worker Mesh
+│   ├── bft_consensus.py                   # 21-Validator BFT (2/3+1) Coordinator
 │   ├── identity_verifier.py               # Ed25519 / SPIFFE DID Signature Gate
+│   ├── tee_attestation.py                 # AMD SEV-SNP / Intel TDX Quote Verifier
 │   ├── red_teaming_sandbox.py             # OWASP Agentic Top 10 Security Suite
 │   ├── evaluator.py                       # Firecracker MicroVM + $ Eval Kernel
+│   ├── zk_leaderboard_verifier.py         # Groth16 ZK-SNARK Proof Verifier
 │   ├── a2a_arena.py                       # A2A v1.0 JSON-RPC Matchup Engine
 │   ├── leaderboard_sync.py                # Redis ZSET Top 1M Cap Manager
 │   ├── qdrant_indexer.py                  # 1536-d Cosine Vector Search Engine
@@ -310,6 +315,9 @@ echo "GAEE Production Backend & Deployment files successfully generated."
           </div>
         </div>
       </div>
+
+      {/* The .00001% Apex Engineering Pillars Interactive Panel */}
+      <ApexFourPillarsPanel agents={agents} />
 
       {/* Live Merkle Root Credential Bridge + Enterprise Webhook Dispatcher Split */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
