@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gaee-production
+  labels:
+    app.kubernetes.io/part-of: gaee-hyperscale-mesh
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gaee-celery-sandbox-workers
+  namespace: gaee-production
+spec:
+  replicas: 64
+  selector:
+    matchLabels:
+      app: gaee-sandbox-worker
+  template:
+    metadata:
+      labels:
+        app: gaee-sandbox-worker
+    spec:
+      runtimeClassName: kata-firecracker-microvm
+      containers:
+        - name: evaluator-kernel
+          image: registry.gaee.network/kernel-worker:v2026.10
+          resources:
+            requests:
+              cpu: "2"
+              memory: "4Gi"
+            limits:
+              cpu: "4"
+              memory: "8Gi"
+              devices.kubevirt.io/kvm: "1"
+          env:
+            - name: REDIS_CLUSTER_URI
+              value: "redis://redis-top1m-zset.gaee-production.svc:6379/1"
+            - name: QDRANT_GRPC_URI
+              value: "http://qdrant-vector-mesh.gaee-production.svc:6334"
+            - name: TIMESCALEDB_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: gaee-ledger-secrets
+                  key: timescale_dsn
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: gaee-sandbox-worker-hpa
+  namespace: gaee-production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: gaee-celery-sandbox-workers
+  minReplicas: 32
+  maxReplicas: 512
+  metrics:
+    - type: External
+      external:
+        metric:
+          name: kafka_consumer_group_lag
+        target:
+          type: AverageValue
+          averageValue: "100"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gaee-control-plane-service
+  namespace: gaee-production
+spec:
+  type: LoadBalancer
+  selector:
+    app: gaee-web-console
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
